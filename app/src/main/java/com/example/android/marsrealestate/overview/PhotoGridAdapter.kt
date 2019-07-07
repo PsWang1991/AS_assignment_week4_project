@@ -26,6 +26,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.marsrealestate.R
 import com.example.android.marsrealestate.databinding.GridViewItemBinding
 import com.example.android.marsrealestate.network.MarsProperty
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val ITEM_VIEW_TYPE_HEADER = 0
 private val ITEM_VIEW_TYPE_ITEM = 1
@@ -37,6 +41,8 @@ private val ITEM_VIEW_TYPE_ITEM = 1
  */
 class PhotoGridAdapter( val onClickListener: OnClickListener ) :
         ListAdapter<DataItem, RecyclerView.ViewHolder>(DiffCallback) {
+
+    private val adapterScope = CoroutineScope(Dispatchers.Default)
     /**
      * The MarsPropertyViewHolder constructor takes the binding variable from the associated
      * GridViewItem, which nicely gives it access to the full [MarsProperty] information.
@@ -55,12 +61,12 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
      * Allows the RecyclerView to determine which items have changed when the [List] of [MarsProperty]
      * has been updated.
      */
-    companion object DiffCallback : DiffUtil.ItemCallback<MarsProperty>() {
-        override fun areItemsTheSame(oldItem: MarsProperty, newItem: MarsProperty): Boolean {
+    companion object DiffCallback : DiffUtil.ItemCallback<DataItem>() {
+        override fun areItemsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: MarsProperty, newItem: MarsProperty): Boolean {
+        override fun areContentsTheSame(oldItem: DataItem, newItem: DataItem): Boolean {
             return oldItem.id == newItem.id
         }
     }
@@ -78,6 +84,7 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
         }
     }
 
+    // This ViewHolder if for Header
     class TextViewHolder(view: View): RecyclerView.ViewHolder(view) {
         companion object {
             fun from(parent: ViewGroup): TextViewHolder {
@@ -93,16 +100,34 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
      */
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is ViewHolder ->{
+            is MarsPropertyViewHolder ->{
                 val marsProperty = getItem(position) as DataItem.MarsItem
-                holder.itemView.setOnClickListener {
-                    onClickListener.onClick(marsProperty)
-                }
+//                holder.itemView.setOnClickListener {
+//                    onClickListener.onClick(marsProperty)
+//                }
                 holder.bind(marsProperty.marsProperty)
             }
         }
+    }
 
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is DataItem.Header -> ITEM_VIEW_TYPE_HEADER
+            is DataItem.MarsItem -> ITEM_VIEW_TYPE_ITEM
+        }
+    }
 
+    // New function to submit list and also adds header
+    fun addHeaderAndSubmitList(list:List<MarsProperty>?) {
+        adapterScope.launch {
+            val items = when (list) {
+                null -> listOf(DataItem.Header)
+                else -> listOf(DataItem.Header) + list.map { DataItem.MarsItem(it) }
+            }
+            withContext(Dispatchers.Main) {
+                submitList(items)
+            }
+        }
     }
 
     /**
@@ -110,8 +135,8 @@ class PhotoGridAdapter( val onClickListener: OnClickListener ) :
      * associated with the current item to the [onClick] function.
      * @param clickListener lambda that will be called with the current [MarsProperty]
      */
-    class OnClickListener(val clickListener: (marsProperty:MarsProperty) -> Unit) {
-        fun onClick(marsProperty:MarsProperty) = clickListener(marsProperty)
+    class OnClickListener(val clickListener: (marsProperty:DataItem.MarsItem) -> Unit) {
+        fun onClick(marsProperty:DataItem.MarsItem) = clickListener(marsProperty)
     }
 }
 

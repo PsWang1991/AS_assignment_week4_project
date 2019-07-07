@@ -50,10 +50,10 @@ class OverviewViewModel : ViewModel() {
         get() = _properties
 
     // Internally, we use a MutableLiveData to handle navigation to the selected property
-    private val _navigateToSelectedProperty = MutableLiveData<MarsProperty>()
+    private val _navigateToSelectedProperty = MutableLiveData<DataItem.MarsItem>()
 
     // The external immutable LiveData for the navigation property
-    val navigateToSelectedProperty: LiveData<MarsProperty>
+    val navigateToSelectedProperty: LiveData<DataItem.MarsItem>
         get() = _navigateToSelectedProperty
 
     // Create a Coroutine scope using a job to be able to cancel when needed
@@ -105,7 +105,7 @@ class OverviewViewModel : ViewModel() {
      * When the property is clicked, set the [_navigateToSelectedProperty] [MutableLiveData]
      * @param marsProperty The [MarsProperty] that was clicked on.
      */
-    fun displayPropertyDetails(marsProperty: MarsProperty) {
+    fun displayPropertyDetails(marsProperty: DataItem.MarsItem) {
         _navigateToSelectedProperty.value = marsProperty
     }
 
