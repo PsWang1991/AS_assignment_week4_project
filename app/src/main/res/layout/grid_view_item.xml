@@ -23,10 +23,6 @@
 
     <data>
         <variable
-            name="viewModel"
-            type="com.example.android.marsrealestate.detail.DetailViewModel" />
-
-        <variable
             name="property"
             type="com.example.android.marsrealestate.network.MarsProperty" />
     </data>
@@ -43,8 +39,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="$100,000"
+            android:layout_marginBottom="32dp"
+            android:text="@{property.displayPropertyPrice}"
             android:textColor="#de000000"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -59,7 +55,7 @@
             android:layout_marginStart="8dp"
             android:textColor="#de000000"
             android:textSize="39sp"
-            android:text="@{viewModel.displayPropertyType}"
+            android:text="@{property.displayPropertyType}"
 
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mars_image"

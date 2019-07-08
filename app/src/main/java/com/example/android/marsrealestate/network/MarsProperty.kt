@@ -34,8 +34,29 @@ data class MarsProperty(
         val id: String,
         // used to map img_src from the JSON to imgSrcUrl in our class
         @Json(name = "img_src") val imgSrcUrl: String,
-        val type: String,
-        val price: Double) : Parcelable {
+        @Json(name = "type") val type: String,
+        @Json(name = "price") val price: Double) : Parcelable {
     val isRental
         get() = type == "rent"
+
+    // The displayPropertyPrice formatted Transformation Map LiveData, which displays the sale
+    // or rental price.
+    var displayPropertyPrice : String =
+            when (isRental) {
+                true -> String.format("\$%,.0f/month", price)
+                false -> String.format("\$%,.0f", price)
+            }
+
+    // The displayPropertyType formatted Transformation Map LiveData, which displays the
+    // "For Rent/Sale" String
+    var displayPropertyType = "For " +
+            when (isRental) {
+                true -> "Rent"
+                false -> "Sale"
+            }
 }
+
+
+
+
+

@@ -3,6 +3,8 @@
     android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:padding="8dp"
     android:text="2019 Most Popular"
-    android:padding="8dp" />
+    android:textAlignment="center"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:textSize="35sp" />
